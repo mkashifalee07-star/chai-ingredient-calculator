@@ -1,0 +1,1 @@
+return joblib.load("chai_model.pkl")
