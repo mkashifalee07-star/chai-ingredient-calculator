@@ -30,6 +30,7 @@ try:
         if st.button("Calculate Ingredients"):
             input_data = pd.DataFrame({"cups": [cups]})
             prediction = model.predict(input_data)[0]
+            st.write("Model prediction:", prediction)
 
             st.subheader(f"Ingredients for {cups} cups")
             st.write(f"🥛 Milk: {prediction[0]:.1f} ml")
