@@ -3,32 +3,34 @@ import streamlit as st
 import pandas as pd
 import joblib
 import os
+import traceback
 
 st.set_page_config(page_title="Chai Ingredient Calculator", page_icon="☕")
-
 st.title("☕ Chai Ingredient Calculator")
 st.write("Enter the number of cups to calculate chai ingredients.")
 
-try:
-    if not os.path.exists("chai_model.pkl"):
-        st.error("chai_model.pkl file nahi mili. GitHub par file check karo.")
-    else:
+if not os.path.exists("chai_model.pkl"):
+    st.error("chai_model.pkl file nahi mili.")
+else:
+    try:
         model = joblib.load("chai_model.pkl")
+        st.success("Model successfully loaded!")
 
-        cups = st.number_input(
-            "Number of cups",
-            min_value=1,
-            max_value=100,
-            value=4,
-            step=1
-        )
+        cups = st.number_input("Number of cups", 1, 100, 4)
 
         if st.button("Calculate Ingredients"):
-            input_data = pd.DataFrame({"cups": [cups]})
-            prediction = model.predict(input_data)
+            try:
+                input_data = pd.DataFrame({"cups": [cups]})
+                prediction = model.predict(input_data)
 
-            st.write("Model output:", prediction)
-            st.write("Prediction shape:", prediction.shape)
+                st.write("Prediction output:", prediction)
+                st.write("Prediction type:", type(prediction).__name__)
+                st.write("Prediction shape:", getattr(prediction, "shape", "No shape"))
 
-except Exception as e:
-    st.error(f"Error: {e}")
+            except Exception:
+                st.error("Prediction ke waqt error aya:")
+                st.code(traceback.format_exc())
+
+    except Exception:
+        st.error("Model load karte waqt error aya:")
+        st.code(traceback.format_exc())
